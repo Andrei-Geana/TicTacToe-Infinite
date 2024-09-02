@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tictactoe_infinite/model/game_settings.dart';
 import 'package:tictactoe_infinite/page/main_page.dart';
 import 'package:tictactoe_infinite/theme/theme_provider.dart';
 
@@ -8,7 +9,8 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ThemeProvider())
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => GameSettings())
       ],
       child: const MainApp()
   ));
