@@ -50,6 +50,12 @@ class _GamePageState extends State<GamePage> {
           cellWidth = 50;
           cellMarkSize = 35;
         }
+      default:
+        {
+          cellHeight = 30;
+          cellWidth = 30;
+          cellMarkSize = 20;
+        }
     }
   }
 
@@ -71,7 +77,12 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text(Provider.of<GameSettings>(context).getGameTypeAsString(),
+            style: const TextStyle(
+              fontSize: 15,
+            )),
+      ),
       body: Stack(
         children: [
           Padding(
@@ -137,7 +148,7 @@ class _GamePageState extends State<GamePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(
-                  height: 25,
+                  height: 55,
                 ),
                 buildBoard(),
               ],
