@@ -1,37 +1,39 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tictactoe_infinite/model/game_settings.dart';
-import 'package:tictactoe_infinite/model/player.dart';
+import 'package:tictactoe_infinite/model/legacy_game_logic.dart';
 
 class GamePage extends StatefulWidget {
-  final String player1Name, player2Name;
+  final String player1Name, player2Name, player1Symbol, player2Symbol;
   const GamePage(
-      {super.key, required this.player1Name, required this.player2Name});
+      {super.key,
+      required this.player1Name,
+      required this.player2Name,
+      required this.player1Symbol,
+      required this.player2Symbol});
 
   @override
   State<StatefulWidget> createState() => _GamePageState();
 }
 
 class _GamePageState extends State<GamePage> {
-  late List<List<String?>> board;
-  late Player player1, player2;
-  late bool isFirstPlayersTurn;
-
+  late GameLogic gameLogic;
+  late int numberOfWins = context.read<GameSettings>().roundsToWin;
   late double cellHeight, cellWidth, cellMarkSize;
 
   @override
   void initState() {
+    final matrixSize = context.read<GameSettings>().matrixSize;
+    gameLogic = GameLogic(widget.player1Name, widget.player1Symbol,
+        widget.player2Name, widget.player2Symbol, matrixSize);
+    gameLogic.initializeBoard();
+    gameLogic.pickWhoMovesFirst();
+    initializeCellSizes(matrixSize);
     super.initState();
-    initializePlayers();
-    initializeBoard();
-    pickWhoMovesFirst();
-    initializeCellSizes();
   }
 
-  void initializeCellSizes() {
-    switch (context.read<GameSettings>().matrixSize) {
+  void initializeCellSizes(int matrixSize) {
+    switch (matrixSize) {
       case 3:
         {
           cellHeight = 80;
@@ -59,29 +61,21 @@ class _GamePageState extends State<GamePage> {
     }
   }
 
-  void pickWhoMovesFirst() {
-    isFirstPlayersTurn = Random().nextBool();
-  }
-
-  void initializePlayers() {
-    player1 = Player(widget.player1Name, 0, 'X');
-    player2 = Player(widget.player2Name, 0, 'O');
-  }
-
-  void initializeBoard() {
-    final matrixSize = context.read<GameSettings>().matrixSize;
-    board = List.generate(
-        matrixSize, (_) => List.generate(matrixSize, (_) => null));
+  String truncateText(String text, int maxLength) {
+    if (text.length <= maxLength) {
+      return text;
+    } else {
+      return '${text.substring(0, maxLength)}...';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(Provider.of<GameSettings>(context).getGameTypeAsString(),
-            style: const TextStyle(
-              fontSize: 15,
-            )),
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        title: Text(Provider.of<GameSettings>(context).getGameTypeAsString()),
       ),
       body: Stack(
         children: [
@@ -95,13 +89,13 @@ class _GamePageState extends State<GamePage> {
                     Column(
                       children: [
                         Text(
-                          player1.symbol,
+                          gameLogic.player1.symbol,
                           style: const TextStyle(
                             fontSize: 60,
                           ),
                         ),
                         Text(
-                          player1.username,
+                          truncateText(gameLogic.player1.username, 10),
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -112,13 +106,13 @@ class _GamePageState extends State<GamePage> {
                     Column(
                       children: [
                         Text(
-                          player2.symbol,
+                          gameLogic.player2.symbol,
                           style: const TextStyle(
                             fontSize: 60,
                           ),
                         ),
                         Text(
-                          player2.username,
+                          truncateText(gameLogic.player2.username, 10),
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -131,15 +125,22 @@ class _GamePageState extends State<GamePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text(player1.numberOfWins.toString()),
-                    Text(player2.numberOfWins.toString())
+                    Text(
+                      truncateText(
+                          gameLogic.player1.numberOfWins.toString(), 10),
+                    ),
+                    Text(
+                      truncateText(
+                          gameLogic.player2.numberOfWins.toString(), 10),
+                    ),
                   ],
                 ),
                 const SizedBox(
                   height: 15,
                 ),
                 Text(
-                    '${isFirstPlayersTurn ? player1.username : player2.username} now moves.')
+                  '${truncateText(gameLogic.isFirstPlayersTurn ? gameLogic.player1.username : gameLogic.player2.username, 10)} now moves.',
+                ),
               ],
             ),
           ),
@@ -157,10 +158,7 @@ class _GamePageState extends State<GamePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          pickWhoMovesFirst();
-          resetBoard();
-        },
+        onPressed: onResetButtonTap,
         child: const Icon(Icons.refresh),
       ),
     );
@@ -199,7 +197,7 @@ class _GamePageState extends State<GamePage> {
   }
 
   Widget buildCell(int row, int col) {
-    final cellValue = board[row][col];
+    final cellValue = gameLogic.board[row][col];
     return GestureDetector(
       onTap: () => onCellTap(row, col),
       child: Container(
@@ -220,128 +218,50 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
+  void onResetButtonTap() {
+    setState(() {
+      gameLogic.pickWhoMovesFirst();
+      gameLogic.resetBoard();
+    });
+  }
+
   void onCellTap(int row, int col) {
-    if (board[row][col] == null) {
+    if (gameLogic.board[row][col] == null) {
       setState(() {
-        board[row][col] = getSymbolForMove();
-        if (moveWon(row, col)) {
-          if (isFirstPlayersTurn) {
-            player1.numberOfWins++;
+        gameLogic.board[row][col] = gameLogic.getSymbolForMove();
+        if (gameLogic.moveWon(row, col)) {
+          if (gameLogic.isFirstPlayersTurn) {
+            gameLogic.player1.numberOfWins++;
+            if (gameLogic.player1.numberOfWins == numberOfWins) {
+              showFinalResult(gameLogic.player1.username);
+              return;
+            }
           } else {
-            player2.numberOfWins++;
+            gameLogic.player2.numberOfWins++;
+            if (gameLogic.player2.numberOfWins == numberOfWins) {
+              showFinalResult(gameLogic.player2.username);
+              return;
+            }
           }
-          showResultDialog();
+          showRoundResult();
           return;
-        } else if (boardIsFull()) {
+        } else if (gameLogic.boardIsFull()) {
           showStalemate();
           return;
         }
-        switchTurn();
+        gameLogic.switchTurn();
       });
     }
   }
 
   void finishGame() {
-    resetBoard();
-    pickWhoMovesFirst();
-  }
-
-  void resetBoard() {
     setState(() {
-      initializeBoard();
+      gameLogic.resetBoard();
+      gameLogic.pickWhoMovesFirst();
     });
   }
 
-  bool moveWon(int row, int column) {
-    return columnFilled(row, column) ||
-        rowFilled(row, column) ||
-        mainDiagonalFilled(row, column) ||
-        secondaryDiagonalFilled(row, column);
-  }
-
-  bool columnFilled(int row, int column) {
-    for (int i = 0; i < board[0].length; ++i) {
-      if (board[i][column] == null) {
-        return false;
-      }
-      if (board[i][column] != board[row][column]) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  bool rowFilled(int row, int column) {
-    for (int i = 0; i < board[0].length; ++i) {
-      if (board[row][i] == null) {
-        return false;
-      }
-      if (board[row][i] != board[row][column]) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  bool mainDiagonalFilled(int row, int column) {
-    if (row != column) {
-      return false;
-    }
-
-    for (int i = 0; i < board[0].length; ++i) {
-      if (board[i][i] == null) {
-        return false;
-      }
-      if (board[i][i] != board[row][column]) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  bool secondaryDiagonalFilled(int row, int column) {
-    if (row + column != board[0].length - 1) {
-      return false;
-    }
-
-    for (int i = 0; i < board[0].length; ++i) {
-      int currentColumn = 0 + i;
-      int currentRow = board[0].length - 1 - i;
-
-      if (board[currentRow][currentColumn] == null) {
-        return false;
-      }
-      if (board[currentRow][currentColumn] != board[row][column]) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  bool boardIsFull() {
-    for (int i = 0; i < board[0].length; ++i) {
-      for (int j = 0; j < board[0].length; ++j) {
-        if (board[i][j] == null) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  String getSymbolForMove() {
-    return isFirstPlayersTurn ? player1.symbol : player2.symbol;
-  }
-
-  void switchTurn() {
-    isFirstPlayersTurn = !isFirstPlayersTurn;
-  }
-
-  void showResultDialog() {
+  void showRoundResult() {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -349,11 +269,11 @@ class _GamePageState extends State<GamePage> {
         return PopScope(
           child: AlertDialog(
             title: const Icon(
-              Icons.sentiment_satisfied_rounded,
+              Icons.star_half_outlined,
               size: 48,
             ),
             content: Text(
-              '${isFirstPlayersTurn ? player1.username : player2.username} won this round!',
+              '${gameLogic.isFirstPlayersTurn ? gameLogic.player1.username : gameLogic.player2.username} won this round!',
               style: const TextStyle(
                 fontSize: 18,
               ),
@@ -437,6 +357,62 @@ class _GamePageState extends State<GamePage> {
                     },
                     child: const Text(
                       'Play Again',
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void showFinalResult(String usernameOfWinner) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return PopScope(
+          child: AlertDialog(
+            title: const Icon(
+              Icons.star_outlined,
+              size: 48,
+            ),
+            content: Text(
+              '$usernameOfWinner won the game!',
+              style: const TextStyle(
+                fontSize: 18,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text(
+                      'Games menu',
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      gameLogic.resetScores();
+                      finishGame();
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text(
+                      'Reset and play again',
                       style: TextStyle(
                         fontSize: 15,
                       ),

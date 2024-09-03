@@ -6,14 +6,10 @@ import 'package:tictactoe_infinite/theme/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        ChangeNotifierProvider(create: (context) => GameSettings())
-      ],
-      child: const MainApp()
-  ));
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (context) => ThemeProvider()),
+    ChangeNotifierProvider(create: (context) => GameSettings())
+  ], child: const MainApp()));
 }
 
 class MainApp extends StatelessWidget {
@@ -22,9 +18,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const MainPage(),
-      theme: Provider.of<ThemeProvider>(context).themeData
-    );
+        debugShowCheckedModeBanner: false,
+        home: const MainPage(),
+        theme: Provider.of<ThemeProvider>(context).themeData);
   }
 }

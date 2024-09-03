@@ -11,27 +11,44 @@ class GamePresettingsPage extends StatefulWidget {
 }
 
 class GamePresettingsPageState extends State<GamePresettingsPage> {
-  late TextEditingController player1Controller;
-  late TextEditingController player2Controller;
+  late TextEditingController player1NameController;
+  late TextEditingController player2NameController;
+
+  late TextEditingController player1SymbolController;
+  late TextEditingController player2SymbolController;
 
   @override
   void initState() {
-    player1Controller = TextEditingController();
-    player2Controller = TextEditingController();
-    player1Controller.text = 'player1';
-    player2Controller.text = 'player2';
+    player1NameController = TextEditingController();
+    player2NameController = TextEditingController();
+
+    player1SymbolController = TextEditingController();
+    player2SymbolController = TextEditingController();
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(backgroundColor: Colors.transparent, surfaceTintColor: Colors.transparent, title:const Text('Offline settings')),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(MediaQuery.of(context).size.height / 20),
           child: Column(
             children: [
+              Text(
+                'No player related changes result in usage of default values.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color:
+                      Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                  fontSize: 12,
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
               Container(
                 decoration: BoxDecoration(
                   color:
@@ -58,9 +75,9 @@ class GamePresettingsPageState extends State<GamePresettingsPage> {
                       },
                       itemBuilder: (context) => [
                         const PopupMenuItem(
-                            value: GameType.legacy, child: Text('LEGACY')),
+                            value: GameType.legacy, child: Text('Legacy')),
                         const PopupMenuItem(
-                            value: GameType.infinite, child: Text('INFINITE')),
+                            value: GameType.infinite, child: Text('Infinite')),
                       ],
                       child: Row(
                         children: [
@@ -96,7 +113,7 @@ class GamePresettingsPageState extends State<GamePresettingsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Matrix size',
+                      'Board size',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -151,6 +168,61 @@ class GamePresettingsPageState extends State<GamePresettingsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
+                      'Rounds to win',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                    PopupMenuButton<int>(
+                      onSelected: (numberOfRounds) {
+                        Provider.of<GameSettings>(context, listen: false)
+                            .roundsToWin = numberOfRounds;
+                      },
+                      itemBuilder: (context) {
+                        return Provider.of<GameSettings>(context, listen: false)
+                            .getNumberOfWins()
+                            .map((value) {
+                          return PopupMenuItem(
+                            value: value,
+                            child: Text(value.toString()),
+                          );
+                        }).toList();
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            '${Provider.of<GameSettings>(context).roundsToWin}',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                          Icon(Icons.arrow_drop_down,
+                              color: Theme.of(context).colorScheme.secondary),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color:
+                      Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
                       'Player1',
                       style: TextStyle(
                         fontSize: 15,
@@ -163,9 +235,9 @@ class GamePresettingsPageState extends State<GamePresettingsPage> {
                     ),
                     Expanded(
                       child: TextField(
-                        controller: player1Controller,
+                        controller: player1NameController,
                         decoration: const InputDecoration(
-                          hintText: 'Enter name',
+                          hintText: 'Enter first player name',
                         ),
                         style: TextStyle(
                           fontSize: 15,
@@ -203,10 +275,95 @@ class GamePresettingsPageState extends State<GamePresettingsPage> {
                     ),
                     Expanded(
                       child: TextField(
-                        controller: player2Controller,
+                        controller: player2NameController,
                         decoration: const InputDecoration(
-                          hintText: 'Enter name',
+                          hintText: 'Enter second player name',
                         ),
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+
+              //symbols
+
+              Container(
+                decoration: BoxDecoration(
+                  color:
+                      Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Symbol1',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: player1SymbolController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter first player symbol',
+                        ),
+                        maxLength: 1,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color:
+                      Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Symbol2',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: player2SymbolController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter second player symbol',
+                        ),
+                        maxLength: 1,
                         style: TextStyle(
                           fontSize: 15,
                           color: Theme.of(context).colorScheme.secondary,
@@ -219,6 +376,7 @@ class GamePresettingsPageState extends State<GamePresettingsPage> {
               const SizedBox(
                 height: 20,
               ),
+
               ElevatedButton(
                 onPressed: () {
                   switch (Provider.of<GameSettings>(context, listen: false)
@@ -234,9 +392,22 @@ class GamePresettingsPageState extends State<GamePresettingsPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => GamePage(
-                              player1Name: player1Controller.text,
-                              player2Name: player2Controller.text,
-                            ),
+                                player1Name:
+                                    player1NameController.text.isNotEmpty
+                                        ? player1NameController.text
+                                        : GameSettings.player1Username,
+                                player2Name:
+                                    player2NameController.text.isNotEmpty
+                                        ? player2NameController.text
+                                        : GameSettings.player2Username,
+                                player1Symbol:
+                                    player1SymbolController.text.isNotEmpty
+                                        ? player1SymbolController.text
+                                        : GameSettings.player1Symbol,
+                                player2Symbol:
+                                    player2SymbolController.text.isNotEmpty
+                                        ? player2SymbolController.text
+                                        : GameSettings.player2Symbol),
                           ),
                         );
                         break;

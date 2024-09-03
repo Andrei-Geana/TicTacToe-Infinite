@@ -41,11 +41,13 @@ class _MainPageState extends State<MainPage> {
                 gameMenuPressed ? buildGamesMenu() : buildMainMenu(),
                 const SizedBox(height: 20),
                 Text(
-                  'Change game type in settings.',
+                  'Quick start launches the legacy version of the game.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color:
-                        Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .secondary
+                        .withOpacity(0.3),
                     fontSize: 12,
                   ),
                 ),
@@ -61,6 +63,27 @@ class _MainPageState extends State<MainPage> {
     return Column(
       children: [
         const SizedBox(height: 40),
+        CustomButton(
+          text: 'Quick start game',
+          onPressed: () {
+            GameSettings().matrixSize=3;
+            GameSettings().roundsToWin=3;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => GamePage(
+                  player1Name: GameSettings.player1Username,
+                  player2Name: GameSettings.player2Username,
+                  player1Symbol: GameSettings.player1Symbol,
+                  player2Symbol: GameSettings.player2Symbol,
+                ),
+              ),
+            );
+          },
+          width: buttonWidth,
+          height: buttonHeight,
+        ),
+        const SizedBox(height: 20),
         CustomButton(
           text: 'Games menu',
           onPressed: () {
@@ -92,37 +115,7 @@ class _MainPageState extends State<MainPage> {
       children: [
         const SizedBox(height: 40),
         CustomButton(
-          text: 'Legacy game',
-          onPressed: () {
-            switch (Provider.of<GameSettings>(context, listen: false).gameType) {
-              case GameType.infinite:
-                {
-                  break;
-                }
-              case GameType.legacy:
-                {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const GamePage(
-                        player1Name: 'Andrei',
-                        player2Name: 'Matei',
-                      ),
-                    ),
-                  );
-                  break;
-                }
-              default:{
-                throw Exception('This type of game mode has not been implemented yet.');
-              }
-            }
-          },
-          width: buttonWidth,
-          height: buttonHeight,
-        ),
-        const SizedBox(height: 20),
-        CustomButton(
-          text: 'Infinite game',
+          text: 'Start game (OFFLINE)',
           onPressed: () {
             Navigator.push(
               context,
@@ -130,6 +123,30 @@ class _MainPageState extends State<MainPage> {
                 builder: (context) => const GamePresettingsPage(),
               ),
             );
+          },
+          width: buttonWidth,
+          height: buttonHeight,
+        ),
+        const SizedBox(height: 20),
+        CustomButton(
+          text: 'Start game (ONLINE)',
+          onPressed: () {
+            switch (
+                Provider.of<GameSettings>(context, listen: false).gameType) {
+              case GameType.infinite:
+                {
+                  break;
+                }
+              case GameType.legacy:
+                {
+                  break;
+                }
+              default:
+                {
+                  throw Exception(
+                      'This type of game mode has not been implemented yet.');
+                }
+            }
           },
           width: buttonWidth,
           height: buttonHeight,

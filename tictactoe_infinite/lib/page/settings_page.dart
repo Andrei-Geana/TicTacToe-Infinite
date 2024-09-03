@@ -19,7 +19,7 @@ class SettingsPage extends StatelessWidget {
             Provider.of<ThemeProvider>(context, listen: false).isDarkMode
                 ? SystemUiOverlayStyle.light
                 : SystemUiOverlayStyle.dark,
-                title: const Text('Settings'),
+        title: const Text('Settings'),
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 25),
