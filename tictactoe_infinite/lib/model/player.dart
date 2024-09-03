@@ -1,6 +1,6 @@
 class Player {
   late String username;
   late int numberOfWins;
-
-  Player(this.username, this.numberOfWins);
+  late String symbol;
+  Player(this.username, this.numberOfWins, this.symbol);
 }

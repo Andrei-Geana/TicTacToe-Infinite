@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tictactoe_infinite/component/custom_button.dart';
 import 'package:tictactoe_infinite/page/game_page.dart';
 import 'package:tictactoe_infinite/page/settings_page.dart';
 
@@ -10,9 +11,10 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final double buttonWidth = 150;
+  final double buttonWidth = 250;
   final double buttonHeight = 75;
   final double offset = 50;
+  bool gameMenuPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,66 +34,7 @@ class _MainPageState extends State<MainPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 40),
-              SizedBox(
-                width: buttonWidth,
-                height: buttonHeight,
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const GamePage(player1Name: 'Andrei', player2Name: 'Matei',)));
-                  },
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.secondary,
-                      width: 2.0,
-                    ),
-                  ),
-                  child: Text(
-                    'Start game',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: buttonWidth,
-                height: buttonHeight,
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SettingsPage()));
-                  },
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.secondary,
-                      width: 2.0,
-                    ),
-                  ),
-                  child: Text(
-                    'Settings',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-              ),
+              gameMenuPressed ? buildGamesMenu() : buildMainMenu(),
               const SizedBox(height: 20),
               Text(
                 'Change game type in settings.',
@@ -106,6 +49,79 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildMainMenu() {
+    return Column(
+      children: [
+        const SizedBox(height: 40),
+        CustomButton(
+          text: 'Games menu',
+          onPressed: () {
+            setState(() {
+              gameMenuPressed = true;
+            });
+          },
+          width: buttonWidth,
+          height: buttonHeight,
+        ),
+        const SizedBox(height: 20),
+        CustomButton(
+          text: 'Settings',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SettingsPage()),
+            );
+          },
+          width: buttonWidth,
+          height: buttonHeight,
+        ),
+      ],
+    );
+  }
+
+  Widget buildGamesMenu() {
+    return Column(
+      children: [
+        const SizedBox(height: 40),
+        CustomButton(
+          text: 'Legacy game',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const GamePage(
+                  player1Name: 'Andrei',
+                  player2Name: 'Matei',
+                ),
+              ),
+            );
+          },
+          width: buttonWidth,
+          height: buttonHeight,
+        ),
+        const SizedBox(height: 20),
+        CustomButton(
+          text: 'Infinite game',
+          onPressed: () {
+          },
+          width: buttonWidth,
+          height: buttonHeight,
+        ),
+        const SizedBox(height: 20),
+        CustomButton(
+          text: 'Go back',
+          onPressed: () {
+            setState(() {
+              gameMenuPressed = false;
+            });
+          },
+          width: buttonWidth,
+          height: buttonHeight,
+        ),
+      ],
     );
   }
 }

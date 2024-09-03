@@ -30,25 +30,26 @@ class _GamePageState extends State<GamePage> {
     initializeCellSizes();
   }
 
-  void initializeCellSizes(){
-    switch(board[0].length){
-      case 3:{
-        cellHeight = 80;
-        cellWidth = 80;
-        cellMarkSize = 50;
-      }
-      case 4:{
-        cellHeight = 60;
-        cellWidth = 60;
-        cellMarkSize = 40;
-
-      }
-      case 5:{
-        cellHeight = 50;
-        cellWidth = 50;
-        cellMarkSize = 35;
-
-      }
+  void initializeCellSizes() {
+    switch (context.read<GameSettings>().matrixSize) {
+      case 3:
+        {
+          cellHeight = 80;
+          cellWidth = 80;
+          cellMarkSize = 50;
+        }
+      case 4:
+        {
+          cellHeight = 60;
+          cellWidth = 60;
+          cellMarkSize = 40;
+        }
+      case 5:
+        {
+          cellHeight = 50;
+          cellWidth = 50;
+          cellMarkSize = 35;
+        }
     }
   }
 
@@ -57,8 +58,8 @@ class _GamePageState extends State<GamePage> {
   }
 
   void initializePlayers() {
-    player1 = Player(widget.player1Name, 0);
-    player2 = Player(widget.player2Name, 0);
+    player1 = Player(widget.player1Name, 0, 'X');
+    player2 = Player(widget.player2Name, 0, 'O');
   }
 
   void initializeBoard() {
@@ -82,9 +83,9 @@ class _GamePageState extends State<GamePage> {
                   children: [
                     Column(
                       children: [
-                        const Text(
-                          'X',
-                          style: TextStyle(
+                        Text(
+                          player1.symbol,
+                          style: const TextStyle(
                             fontSize: 60,
                           ),
                         ),
@@ -99,9 +100,9 @@ class _GamePageState extends State<GamePage> {
                     ),
                     Column(
                       children: [
-                        const Text(
-                          'O',
-                          style: TextStyle(
+                        Text(
+                          player2.symbol,
+                          style: const TextStyle(
                             fontSize: 60,
                           ),
                         ),
@@ -220,7 +221,7 @@ class _GamePageState extends State<GamePage> {
           }
           showResultDialog();
           return;
-        } else if(boardIsFull()) {
+        } else if (boardIsFull()) {
           showStalemate();
           return;
         }
@@ -311,9 +312,9 @@ class _GamePageState extends State<GamePage> {
   }
 
   bool boardIsFull() {
-    for(int i=0; i<board[0].length; ++i){
-      for(int j=0;j<board[0].length; ++j) {
-        if(board[i][j] == null) {
+    for (int i = 0; i < board[0].length; ++i) {
+      for (int j = 0; j < board[0].length; ++j) {
+        if (board[i][j] == null) {
           return false;
         }
       }
@@ -322,7 +323,7 @@ class _GamePageState extends State<GamePage> {
   }
 
   String getSymbolForMove() {
-    return isFirstPlayersTurn ? 'X' : 'O';
+    return isFirstPlayersTurn ? player1.symbol : player2.symbol;
   }
 
   void switchTurn() {
@@ -357,7 +358,7 @@ class _GamePageState extends State<GamePage> {
                       Navigator.of(context).pop();
                     },
                     child: const Text(
-                      'Main menu',
+                      'Games menu',
                       style: TextStyle(
                         fontSize: 15,
                       ),
@@ -384,7 +385,7 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
-  void showStalemate(){
+  void showStalemate() {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -437,6 +438,5 @@ class _GamePageState extends State<GamePage> {
         );
       },
     );
-  
   }
 }

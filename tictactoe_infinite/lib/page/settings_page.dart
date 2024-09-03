@@ -38,34 +38,6 @@ class SettingsPage extends StatelessWidget {
                 color: Theme.of(context).colorScheme.secondary,
               ),
             ),
-            const SizedBox(height: 10),
-            Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Infinite game',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
-                  CupertinoSwitch(
-                    value: Provider.of<GameSettings>(context, listen: true)
-                        .isInfinite,
-                    onChanged: (value) =>
-                        Provider.of<GameSettings>(context, listen: false)
-                            .switchGameType(),
-                  ),
-                ],
-              ),
-            ),
 
             const SizedBox(height: 10),
             Container(
