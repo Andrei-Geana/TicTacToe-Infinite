@@ -27,7 +27,7 @@ class _MainPageState extends State<MainPage> {
               Text(
                 'Tic-Tac-Toe Infinite',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.tertiary,
+                  color: Theme.of(context).colorScheme.secondary,
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
@@ -41,14 +41,14 @@ class _MainPageState extends State<MainPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const GamePage()));
+                            builder: (context) => const GamePage(player1Name: 'Andrei', player2Name: 'Matei',)));
                   },
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     side: BorderSide(
-                      color: Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.secondary,
                       width: 2.0,
                     ),
                   ),
@@ -56,7 +56,7 @@ class _MainPageState extends State<MainPage> {
                     'Start game',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.secondary,
                       fontSize: 18,
                     ),
                   ),
@@ -78,7 +78,7 @@ class _MainPageState extends State<MainPage> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     side: BorderSide(
-                      color: Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.secondary,
                       width: 2.0,
                     ),
                   ),
@@ -86,7 +86,7 @@ class _MainPageState extends State<MainPage> {
                     'Settings',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.secondary,
                       fontSize: 18,
                     ),
                   ),
@@ -98,7 +98,7 @@ class _MainPageState extends State<MainPage> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color:
-                      Theme.of(context).colorScheme.tertiary.withOpacity(0.3),
+                      Theme.of(context).colorScheme.secondary.withOpacity(0.3),
                   fontSize: 12,
                 ),
               ),

@@ -15,7 +15,7 @@ class SettingsPage extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        foregroundColor: Theme.of(context).colorScheme.tertiary,
+        foregroundColor: Theme.of(context).colorScheme.secondary,
         systemOverlayStyle:
             Provider.of<ThemeProvider>(context, listen: false).isDarkMode
                 ? SystemUiOverlayStyle.light
@@ -35,7 +35,7 @@ class SettingsPage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ),
             const SizedBox(height: 10),
@@ -53,7 +53,7 @@ class SettingsPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                   ),
                   CupertinoSwitch(
@@ -82,7 +82,7 @@ class SettingsPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                   ),
                   PopupMenuButton<int>(
@@ -102,11 +102,11 @@ class SettingsPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.tertiary,
+                            color: Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                         Icon(Icons.arrow_drop_down,
-                            color: Theme.of(context).colorScheme.tertiary),
+                            color: Theme.of(context).colorScheme.secondary),
                       ],
                     ),
                   )
@@ -121,7 +121,7 @@ class SettingsPage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ),
             const SizedBox(height: 10),
@@ -139,7 +139,7 @@ class SettingsPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                   ),
                   CupertinoSwitch(
