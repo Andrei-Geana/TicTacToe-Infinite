@@ -73,9 +73,10 @@ class _MainPageState extends State<MainPage> {
               MaterialPageRoute(
                 builder: (context) => GamePage(
                   player1Name: GameSettings.player1Username,
-                  player2Name: GameSettings.player2Username,
+                  player2Name: '${GameSettings.player2Username} (bot)',
                   player1Symbol: GameSettings.player1Symbol,
                   player2Symbol: GameSettings.player2Symbol,
+                  player2IsBot: true,
                 ),
               ),
             );

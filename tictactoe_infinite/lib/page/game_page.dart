@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tictactoe_infinite/model/game_settings.dart';
@@ -5,12 +7,14 @@ import 'package:tictactoe_infinite/model/legacy_game_logic.dart';
 
 class GamePage extends StatefulWidget {
   final String player1Name, player2Name, player1Symbol, player2Symbol;
+  final bool player2IsBot;
   const GamePage(
       {super.key,
       required this.player1Name,
       required this.player2Name,
       required this.player1Symbol,
-      required this.player2Symbol});
+      required this.player2Symbol,
+      required this.player2IsBot});
 
   @override
   State<StatefulWidget> createState() => _GamePageState();
@@ -20,14 +24,19 @@ class _GamePageState extends State<GamePage> {
   late GameLogic gameLogic;
   late int numberOfWins = context.read<GameSettings>().roundsToWin;
   late double cellHeight, cellWidth, cellMarkSize;
+  late bool player2IsBot;
 
   @override
   void initState() {
+    player2IsBot = widget.player2IsBot;
     final matrixSize = context.read<GameSettings>().matrixSize;
     gameLogic = GameLogic(widget.player1Name, widget.player1Symbol,
         widget.player2Name, widget.player2Symbol, matrixSize);
     gameLogic.initializeBoard();
     gameLogic.pickWhoMovesFirst();
+    if (!gameLogic.isFirstPlayersTurn && player2IsBot) {
+      makeBotMove();
+    }
     initializeCellSizes(matrixSize);
     super.initState();
   }
@@ -95,7 +104,7 @@ class _GamePageState extends State<GamePage> {
                           ),
                         ),
                         Text(
-                          truncateText(gameLogic.player1.username, 10),
+                          truncateText(gameLogic.player1.username, 13),
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -112,7 +121,7 @@ class _GamePageState extends State<GamePage> {
                           ),
                         ),
                         Text(
-                          truncateText(gameLogic.player2.username, 10),
+                          truncateText(gameLogic.player2.username, 13),
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -139,7 +148,7 @@ class _GamePageState extends State<GamePage> {
                   height: 15,
                 ),
                 Text(
-                  '${truncateText(gameLogic.isFirstPlayersTurn ? gameLogic.player1.username : gameLogic.player2.username, 10)} now moves.',
+                  '${truncateText(gameLogic.isFirstPlayersTurn ? gameLogic.player1.username : gameLogic.player2.username, 13)} now moves.',
                 ),
               ],
             ),
@@ -220,12 +229,18 @@ class _GamePageState extends State<GamePage> {
 
   void onResetButtonTap() {
     setState(() {
-      gameLogic.pickWhoMovesFirst();
       gameLogic.resetBoard();
+      gameLogic.pickWhoMovesFirst();
+      if (!gameLogic.isFirstPlayersTurn && player2IsBot) {
+        makeBotMove();
+      }
     });
   }
 
   void onCellTap(int row, int col) {
+    if(player2IsBot && !gameLogic.isFirstPlayersTurn){
+      return;
+    }
     if (gameLogic.board[row][col] == null) {
       setState(() {
         gameLogic.board[row][col] = gameLogic.getSymbolForMove();
@@ -249,15 +264,49 @@ class _GamePageState extends State<GamePage> {
           showStalemate();
           return;
         }
-        gameLogic.switchTurn();
+        if (player2IsBot) {
+          gameLogic.isFirstPlayersTurn = false;
+          makeBotMove();
+        } else {
+          gameLogic.switchTurn();
+        }
       });
     }
+  }
+
+  void makeBotMove() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    final bestMove = await gameLogic.findBestMoveWithAlphaBeta();
+    int row = bestMove[0];
+    int column = bestMove[1];
+    setState(() {
+      gameLogic.board[row][column] = gameLogic.player2.symbol;
+
+      if (gameLogic.moveWon(row, column)) {
+        gameLogic.player2.numberOfWins++;
+        if (gameLogic.player2.numberOfWins == numberOfWins) {
+          showFinalResult(gameLogic.player2.username);
+          return;
+        }
+        showRoundResult();
+        return;
+      } else if (gameLogic.boardIsFull()) {
+        showStalemate();
+        return;
+      }
+
+      gameLogic.switchTurn();
+    });
   }
 
   void finishGame() {
     setState(() {
       gameLogic.resetBoard();
       gameLogic.pickWhoMovesFirst();
+      if (!gameLogic.isFirstPlayersTurn && player2IsBot) {
+        makeBotMove();
+      }
     });
   }
 

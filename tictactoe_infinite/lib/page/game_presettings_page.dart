@@ -407,7 +407,8 @@ class GamePresettingsPageState extends State<GamePresettingsPage> {
                                 player2Symbol:
                                     player2SymbolController.text.isNotEmpty
                                         ? player2SymbolController.text
-                                        : GameSettings.player2Symbol),
+                                        : GameSettings.player2Symbol,
+                                        player2IsBot: false,),
                           ),
                         );
                         break;

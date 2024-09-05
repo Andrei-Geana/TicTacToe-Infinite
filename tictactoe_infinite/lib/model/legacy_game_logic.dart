@@ -100,4 +100,90 @@ class GameLogic {
     player1.numberOfWins = 0;
     player2.numberOfWins = 0;
   }
+
+  Future<List<int>> findBestMoveWithAlphaBeta() async {
+    int bestScore = -1000;
+    List<int> bestMove = [-1, -1];
+    int alpha = -1000;
+    int beta = 1000;
+
+    for (int i = 0; i < matrixSize; i++) {
+      for (int j = 0; j < matrixSize; j++) {
+        if (board[i][j] == null) {
+          board[i][j] = player1.symbol;
+          int score = minimaxWithAlphaBeta(0, false, alpha, beta);
+          board[i][j] = null;
+
+          if (score >= bestScore) {
+            bestScore = score;
+            bestMove = [i, j];
+          }
+        }
+      }
+    }
+
+    return bestMove;
+  }
+
+  int minimaxWithAlphaBeta(int depth, bool isMaximizer, int alpha, int beta) {
+    String? winner = getWinner();
+    if (winner != null) {
+      if (winner == player1.symbol) {
+        return 10 - depth;
+      } else if (winner == player2.symbol) {
+        return depth - 10;
+      }
+    }
+
+    if (boardIsFull()) {
+      return 0;
+    }
+
+    if (isMaximizer) {
+      int maxScore = -1000;
+      for (int i = 0; i < matrixSize; i++) {
+        for (int j = 0; j < matrixSize; j++) {
+          if (board[i][j] == null) {
+            board[i][j] = player1.symbol;
+            int score = minimaxWithAlphaBeta(depth + 1, false, alpha, beta);
+            board[i][j] = null;
+            maxScore = max(maxScore, score);
+            alpha = max(alpha, score);
+            if (beta <= alpha) {
+              return maxScore;
+            }
+          }
+        }
+      }
+      return maxScore;
+    } else {
+      int minScore = 1000;
+      for (int i = 0; i < matrixSize; i++) {
+        for (int j = 0; j < matrixSize; j++) {
+          if (board[i][j] == null) {
+            board[i][j] = player2.symbol;
+            int score = minimaxWithAlphaBeta(depth + 1, true, alpha, beta);
+            board[i][j] = null;
+            minScore = min(minScore, score);
+            beta = min(beta, score);
+            if (beta <= alpha) {
+              return minScore;
+            }
+          }
+        }
+      }
+      return minScore;
+    }
+  }
+
+  String? getWinner() {
+    for (int i = 0; i < matrixSize; i++) {
+      for (int j = 0; j < matrixSize; j++) {
+        if (moveWon(i, j)) {
+          return board[i][j];
+        }
+      }
+    }
+    return null;
+  }
 }
