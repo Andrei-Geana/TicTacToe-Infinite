@@ -40,7 +40,7 @@ class _MainPageState extends State<MainPage> {
                 gameMenuPressed ? buildGamesMenu() : buildMainMenu(),
                 const SizedBox(height: 20),
                 Text(
-                  'Quick start launches the legacy version of the game.',
+                  'Custom game mode is in the \'Game menu\'.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Theme.of(context)
@@ -63,7 +63,7 @@ class _MainPageState extends State<MainPage> {
       children: [
         const SizedBox(height: 40),
         CustomButton(
-          text: 'Quick start game',
+          text: 'Quick Start',
           onPressed: () {
             Navigator.push(
               context,

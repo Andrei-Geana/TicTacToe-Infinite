@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tictactoe_infinite/model/game_settings.dart';
+import 'package:tictactoe_infinite/model/infinite_game_logic.dart';
 import 'package:tictactoe_infinite/model/legacy_game_logic.dart';
 
 class GamePage extends StatefulWidget {
@@ -25,6 +26,9 @@ class _GamePageState extends State<GamePage> {
   late int numberOfWins = context.read<GameSettings>().roundsToWin;
   late double cellHeight, cellWidth, cellMarkSize;
   late bool player2IsBot;
+  late List<BoardLocation> player1Stack;
+  late List<BoardLocation> player2Stack;
+  late GameType gameType;
 
   @override
   void initState() {
@@ -32,13 +36,20 @@ class _GamePageState extends State<GamePage> {
     final matrixSize = context.read<GameSettings>().matrixSize;
     gameLogic = GameLogic(widget.player1Name, widget.player1Symbol,
         widget.player2Name, widget.player2Symbol, matrixSize);
+    gameType = context.read<GameSettings>().gameType;
     gameLogic.initializeBoard();
     gameLogic.pickWhoMovesFirst();
+    initializeStacks();
     if (!gameLogic.isFirstPlayersTurn && player2IsBot) {
       makeBotMove();
     }
     initializeCellSizes(matrixSize);
     super.initState();
+  }
+
+  void initializeStacks() {
+    player1Stack = [];
+    player2Stack = [];
   }
 
   void initializeCellSizes(int matrixSize) {
@@ -233,6 +244,9 @@ class _GamePageState extends State<GamePage> {
 
   void onResetButtonTap() {
     setState(() {
+      if (gameType == GameType.infinite) {
+        initializeStacks();
+      }
       gameLogic.resetBoard();
       gameLogic.pickWhoMovesFirst();
       if (!gameLogic.isFirstPlayersTurn && player2IsBot) {
@@ -247,7 +261,17 @@ class _GamePageState extends State<GamePage> {
     }
     if (gameLogic.board[row][col] == null) {
       setState(() {
+        if (gameType == GameType.infinite &&
+            player1Stack.length == gameLogic.matrixSize) {
+          popFirstFromStack();
+        }
         gameLogic.board[row][col] = gameLogic.getSymbolForMove();
+        if (gameLogic.isFirstPlayersTurn) {
+          player1Stack.add(BoardLocation(line: row, column: col));
+        } else {
+          player2Stack.add(BoardLocation(line: row, column: col));
+        }
+
         if (gameLogic.moveWon(row, col)) {
           if (gameLogic.isFirstPlayersTurn) {
             gameLogic.player1.numberOfWins++;
@@ -285,7 +309,16 @@ class _GamePageState extends State<GamePage> {
     int row = bestMove[0];
     int column = bestMove[1];
     setState(() {
+      if (gameType == GameType.infinite &&
+          player2Stack.length == gameLogic.matrixSize) {
+        popFirstFromStack();
+      }
+
       gameLogic.board[row][column] = gameLogic.player2.symbol;
+
+      if (gameType == GameType.infinite) {
+        player2Stack.add(BoardLocation(line: row, column: column));
+      }
 
       if (gameLogic.moveWon(row, column)) {
         gameLogic.player2.numberOfWins++;
@@ -307,11 +340,34 @@ class _GamePageState extends State<GamePage> {
   void finishGame() {
     setState(() {
       gameLogic.resetBoard();
+      initializeStacks();
       gameLogic.pickWhoMovesFirst();
       if (!gameLogic.isFirstPlayersTurn && player2IsBot) {
         makeBotMove();
       }
     });
+  }
+
+  void popFirstFromStack() {
+    if (gameLogic.isFirstPlayersTurn) {
+      if (player1Stack.isEmpty) {
+        return;
+      }
+      var first = player1Stack.first;
+      player1Stack.removeAt(0);
+      setState(() {
+        gameLogic.board[first.line][first.column] = null;
+      });
+    } else {
+      if (player2Stack.isEmpty) {
+        return;
+      }
+      var first = player2Stack.first;
+      player2Stack.removeAt(0);
+      setState(() {
+        gameLogic.board[first.line][first.column] = null;
+      });
+    }
   }
 
   void showRoundResult() {
@@ -534,8 +590,7 @@ class _GamePageState extends State<GamePage> {
           );
         },
       );
-    }
-    else {
+    } else {
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -547,7 +602,7 @@ class _GamePageState extends State<GamePage> {
                 size: 48,
               ),
               content: Text(
-                'You ${usernameOfWinner == GameSettings.player1Username ? 'won' : 'lost'} the game!' ,
+                'You ${usernameOfWinner == GameSettings.player1Username ? 'won' : 'lost'} the game!',
                 style: const TextStyle(
                   fontSize: 18,
                 ),
@@ -589,7 +644,6 @@ class _GamePageState extends State<GamePage> {
           );
         },
       );
-    
     }
   }
 }

@@ -378,11 +378,32 @@ class GamePresettingsPageState extends State<GamePresettingsPage> {
                   Provider.of<GameSettings>(context, listen: false).gameType) {
                 case GameType.infinite:
                   {
+                    Provider.of<GameSettings>(context, listen: false).gameType = GameType.infinite;
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GamePage(
+                          player1Name: player1NameController.text.isNotEmpty
+                              ? player1NameController.text
+                              : GameSettings.player1Username,
+                          player2Name: player2NameController.text.isNotEmpty
+                              ? player2NameController.text
+                              : GameSettings.player2Username,
+                          player1Symbol: player1SymbolController.text.isNotEmpty
+                              ? player1SymbolController.text
+                              : GameSettings.player1Symbol,
+                          player2Symbol: player2SymbolController.text.isNotEmpty
+                              ? player2SymbolController.text
+                              : GameSettings.player2Symbol,
+                          player2IsBot: false,
+                        ),
+                      ),
+                    );
                     break;
                   }
                 case GameType.legacy:
                   {
-                    Provider.of<GameSettings>(context, listen: false).matrixSize=3;
                     Provider.of<GameSettings>(context, listen: false).gameType = GameType.legacy;
                     Navigator.pop(context);
                     Navigator.push(
@@ -597,10 +618,31 @@ class GamePresettingsPageState extends State<GamePresettingsPage> {
                   Provider.of<GameSettings>(context, listen: false).gameType) {
                 case GameType.infinite:
                   {
+                    Provider.of<GameSettings>(context, listen: false).matrixSize=3;
+                    Provider.of<GameSettings>(context, listen: false).gameType=GameType.infinite;
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GamePage(
+                          player1Name: player1NameController.text.isNotEmpty
+                              ? player1NameController.text
+                              : GameSettings.player1Username,
+                          player2Name: player2NameController.text.isNotEmpty
+                              ? player2NameController.text
+                              : GameSettings.player2Username,
+                          player1Symbol: player1SymbolController.text,
+                          player2Symbol: player1SymbolController.text == GameSettings.player1Symbol ? GameSettings.player2Symbol : GameSettings.player1Symbol,
+                          player2IsBot: true,
+                        ),
+                      ),
+                    );
                     break;
                   }
                 case GameType.legacy:
                   {
+                    Provider.of<GameSettings>(context, listen: false).matrixSize=3;
+                    Provider.of<GameSettings>(context, listen: false).gameType=GameType.legacy;
                     Navigator.pop(context);
                     Navigator.push(
                       context,

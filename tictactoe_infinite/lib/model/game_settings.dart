@@ -6,19 +6,16 @@ class GameSettings with ChangeNotifier {
   static late GameType _gameType;
   static late int _matrixSize;
   static late int _roundsToWin;
-  static late String player1Username,
-      player2Username,
-      player1Symbol,
-      player2Symbol;
+
+  static String player1Username = 'player1';
+  static String player2Username = 'player2';
+  static String player1Symbol = 'X';
+  static String player2Symbol = 'O';
 
   GameSettings() {
     _gameType = GameType.legacy;
     _matrixSize = 3;
     _roundsToWin = 1;
-    player1Username = 'player1';
-    player2Username = 'player2';
-    player1Symbol = 'X';
-    player2Symbol = 'O';
   }
 
   bool get isInfinite => _gameType == GameType.infinite;
