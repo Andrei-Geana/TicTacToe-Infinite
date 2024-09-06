@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tictactoe_infinite/component/custom_button.dart';
 import 'package:tictactoe_infinite/model/game_settings.dart';
-import 'package:tictactoe_infinite/page/game_page.dart';
 import 'package:tictactoe_infinite/page/game_presettings_page.dart';
 import 'package:tictactoe_infinite/page/settings_page.dart';
 
@@ -66,18 +65,10 @@ class _MainPageState extends State<MainPage> {
         CustomButton(
           text: 'Quick start game',
           onPressed: () {
-            GameSettings().matrixSize=3;
-            GameSettings().roundsToWin=3;
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => GamePage(
-                  player1Name: GameSettings.player1Username,
-                  player2Name: '${GameSettings.player2Username} (bot)',
-                  player1Symbol: GameSettings.player1Symbol,
-                  player2Symbol: GameSettings.player2Symbol,
-                  player2IsBot: true,
-                ),
+                builder: (context) => const GamePresettingsPage(settingsPageType: 'quick',),
               ),
             );
           },
@@ -121,7 +112,7 @@ class _MainPageState extends State<MainPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const GamePresettingsPage(),
+                builder: (context) => const GamePresettingsPage(settingsPageType: 'custom',),
               ),
             );
           },

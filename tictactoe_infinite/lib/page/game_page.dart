@@ -92,6 +92,10 @@ class _GamePageState extends State<GamePage> {
             padding: const EdgeInsets.only(top: 10.0),
             child: Column(
               children: [
+                Text(
+                  'BEST OF $numberOfWins',
+                  style: const TextStyle(letterSpacing: 3),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -238,7 +242,7 @@ class _GamePageState extends State<GamePage> {
   }
 
   void onCellTap(int row, int col) {
-    if(player2IsBot && !gameLogic.isFirstPlayersTurn){
+    if (player2IsBot && !gameLogic.isFirstPlayersTurn) {
       return;
     }
     if (gameLogic.board[row][col] == null) {
@@ -311,58 +315,113 @@ class _GamePageState extends State<GamePage> {
   }
 
   void showRoundResult() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return PopScope(
-          child: AlertDialog(
-            title: const Icon(
-              Icons.star_half_outlined,
-              size: 48,
-            ),
-            content: Text(
-              '${gameLogic.isFirstPlayersTurn ? gameLogic.player1.username : gameLogic.player2.username} won this round!',
-              style: const TextStyle(
-                fontSize: 18,
+    if (!player2IsBot) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return PopScope(
+            child: AlertDialog(
+              title: const Icon(
+                Icons.star_half_outlined,
+                size: 48,
               ),
-              textAlign: TextAlign.center,
-            ),
-            actions: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text(
-                      'Games menu',
-                      style: TextStyle(
-                        fontSize: 15,
+              content: Text(
+                '${gameLogic.isFirstPlayersTurn ? gameLogic.player1.username : gameLogic.player2.username} won this round!',
+                style: const TextStyle(
+                  fontSize: 18,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Games menu',
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
                       ),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      finishGame();
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text(
-                      'Play Again',
-                      style: TextStyle(
-                        fontSize: 15,
+                    TextButton(
+                      onPressed: () {
+                        finishGame();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Play Again',
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return PopScope(
+            child: AlertDialog(
+              title: const Icon(
+                Icons.star_half_outlined,
+                size: 48,
               ),
-            ],
-          ),
-        );
-      },
-    );
+              content: Text(
+                'You${gameLogic.isFirstPlayersTurn ? ' won ' : ' lost '}this round!',
+                style: const TextStyle(
+                  fontSize: 18,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Games menu',
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        finishGame();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Play Again',
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
   }
 
   void showStalemate() {
@@ -421,58 +480,116 @@ class _GamePageState extends State<GamePage> {
   }
 
   void showFinalResult(String usernameOfWinner) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return PopScope(
-          child: AlertDialog(
-            title: const Icon(
-              Icons.star_outlined,
-              size: 48,
-            ),
-            content: Text(
-              '$usernameOfWinner won the game!',
-              style: const TextStyle(
-                fontSize: 18,
+    if (!player2IsBot) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return PopScope(
+            child: AlertDialog(
+              title: const Icon(
+                Icons.star_outlined,
+                size: 48,
               ),
-              textAlign: TextAlign.center,
-            ),
-            actions: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text(
-                      'Games menu',
-                      style: TextStyle(
-                        fontSize: 15,
+              content: Text(
+                '$usernameOfWinner won the game!',
+                style: const TextStyle(
+                  fontSize: 18,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Games menu',
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
                       ),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      gameLogic.resetScores();
-                      finishGame();
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text(
-                      'Reset and play again',
-                      style: TextStyle(
-                        fontSize: 15,
+                    TextButton(
+                      onPressed: () {
+                        gameLogic.resetScores();
+                        finishGame();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Reset and play again',
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+    else {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return PopScope(
+            child: AlertDialog(
+              title: const Icon(
+                Icons.star_outlined,
+                size: 48,
               ),
-            ],
-          ),
-        );
-      },
-    );
+              content: Text(
+                'You ${usernameOfWinner == GameSettings.player1Username ? 'won' : 'lost'} the game!' ,
+                style: const TextStyle(
+                  fontSize: 18,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Games menu',
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        gameLogic.resetScores();
+                        finishGame();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Reset and play again',
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    
+    }
   }
 }
